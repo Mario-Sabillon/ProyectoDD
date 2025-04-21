@@ -13,6 +13,6 @@ try {
     req.user = decoded;
     next();
 } catch (err) {
-    return res.status(401).json({ message: 'Token inválido' });
+    return res.status(401).json({ message: 'Error de Datos' });
 }
 };

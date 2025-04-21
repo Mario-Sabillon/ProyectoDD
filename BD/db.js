@@ -1,25 +1,24 @@
-// BD/db.js
-import pkg from 'pg';
-import dotenv from 'dotenv';
+import dotenv from 'dotenv'
+import pg from 'pg'
 
-dotenv.config();
+dotenv.config()
 
-const { Client } = pkg;
+const { Pool } = pg
 
-const dbConnection = new Client({
-  user: process.env.DB_USER,
-  host: process.env.DB_HOST,
-  database: process.env.DB_NAME,
-  password: process.env.DB_PASSWORD,
-  port: process.env.DB_PORT,
+const dbConnection = new Pool({
+  connectionString: process.env.DATABASE_URL,
   ssl: {
-    rejectUnauthorized: false, // IMPORTANTE para conexiones seguras a Supabase
-  },
-});
+    rejectUnauthorized: false
+  }
+})
 
 dbConnection.connect()
-  .then(() => console.log('✅ Conectado a la base de datos PostgreSQL'))
-  .catch(err => console.error('❌ Error de conexión a la base de datos:', err.stack));
+  .then(() => {
+    console.log('Conectado a la base de datos')
+  })
+  .catch(error => {
+    console.error('Error al conectar a la base de datos:', error.message)
+  })
 
-// Solo necesitas exportar esto
-export { dbConnection };
+export const query = (text, params) => dbConnection.query(text, params)
+export { dbConnection }
