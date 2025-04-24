@@ -1,0 +1,19 @@
+### Registro de usuario
+POST http://localhost:5000/api/auth/register
+Content-Type: application/json
+
+{
+"nombre": "Lucas1",
+"correo": "Lucas1@unah.hn",
+"contrasena": "admin123",
+"rol": "empleado"
+}
+
+### Login usuario
+POST http://localhost:5000/api/auth/login
+Content-Type: application/json
+
+{
+"correo": "Timoteo@unah.hn",
+"contrasena": "hola"
+}
