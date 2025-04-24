@@ -1,27 +1,21 @@
-import {dbConnection} from '../BD/db.js'; 
+import { updateSucursal } from '../Models/empleados.js';
+import { logger } from '../Utils/logger.js';
 
-export const createEmpleado = async (req, res) => {
-const { nombre, correo, sucursal_id } = req.body;
-
+export const cambiarSucursal = async (req, res) => {
 try {
-    const query = 'INSERT INTO empleados (nombre, correo, sucursal_id) VALUES ($1, $2, $3) RETURNING *';
-    const values = [nombre, correo, sucursal_id];
-
-    const result = await dbConnection.query(query, values);
-
-    res.status(201).json({ message: 'Empleado creado exitosamente', data: result.rows[0] });
+    const empleado = await updateSucursal(
+    req.params.id,
+    req.body.sucursal_id,
+    req.user.id
+    );
+    
+    res.json(empleado);
 } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error al crear empleado' });
-}
-};
-
-export const getEmpleados = async (req, res) => {
-try {
-    const result = await dbConnection.query('SELECT * FROM empleados');
-    res.status(200).json(result.rows);
-} catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error al obtener empleados' });
+    logger.error('Error al cambiar sucursal', {
+    error: error.message,
+    empleadoId: req.params.id,
+    userId: req.user.id
+    });
+    res.status(500).json({ error: 'Error al cambiar sucursal' });
 }
 };

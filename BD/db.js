@@ -5,14 +5,14 @@ dotenv.config()
 
 const { Pool } = pg
 
-const dbConnection = new Pool({
+const supabase = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
     rejectUnauthorized: false
   }
 })
 
-dbConnection.connect()
+supabase.connect()
   .then(() => {
     console.log('Conectado a la base de datos')
   })
@@ -20,5 +20,5 @@ dbConnection.connect()
     console.error('Error al conectar a la base de datos:', error.message)
   })
 
-export const query = (text, params) => dbConnection.query(text, params)
-export { dbConnection }
+export const query = (text, params) => supabase.query(text, params)
+export { supabase }

@@ -1,0 +1,4 @@
+{"error":"secretOrPrivateKey must have a value","level":"error","message":"Error en registro","timestamp":"2025-04-24T02:24:07.058Z"}
+{"error":"secretOrPrivateKey must have a value","level":"error","message":"Error en registro","timestamp":"2025-04-24T02:29:04.813Z"}
+{"level":"info","message":"Usuario registrado","timestamp":"2025-04-24T02:30:55.747Z","userId":"a9909f84-8483-4998-b98a-fa930318b54e"}
+{"error":"token is not defined","level":"error","message":"Error en registro","timestamp":"2025-04-24T02:30:55.749Z"}

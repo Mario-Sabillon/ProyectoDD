@@ -1,59 +1,40 @@
-import {dbConnection} from '../BD/db.js'; 
 import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
+import { getUserByEmail, createUser } from '../Models/usuarios.js';
+import { logger } from '../Utils/logger.js';
 
-//import path from 'path';
-
-//console.log('Directorio actual:', __dirname);  // Esto te ayudará a verificar si la ruta es correcta
-
-//import client from '../BD/db.js';  // La importación que estás usando
-
-export const register = async (req, res) => {
-const { email, password, role } = req.body;
-
+export const login = async (req, res) => {
 try {
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // console.log(req);
+    const { correo, contrasena } = req.body;
+    
+    const user = await getUserByEmail(req, res).then((result) => {
+        console.log('result', result);  
+        const token = result.Token;
+        logger.info('Inicio de sesión exitoso', { user: correo });
+        //res.json({ token }); // muestra el token en la respuesta
+        res.status(200).json("Inicio de sesión exitoso");
+    })
 
-    const query = 'INSERT INTO users (email, password, role) VALUES ($1, $2, $3) RETURNING *';
-    const values = [email, hashedPassword, role];
-
-    const result = await dbConnection.query(query, values);
-
-    const token = jwt.sign({ id: result.rows[0].id, role: result.rows[0].role }, process.env.JWT_SECRET, {
-expiresIn: '1h',
-    });
-
-    res.status(201).json({ token });
-} catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Error al registrar usuario' });
+} catch (error) {
+    logger.error('Error en login', { error: error.message });
+    res.status(500).json({ error: 'Error en autenticación' });
 }
 };
 
-export const login = async (req, res) => {
-const { email, password } = req.body;
-
+export const register = async (req, res) => {
 try {
-    const query = 'SELECT * FROM users WHERE email = $1';
-    const result = await dbConnection.query(query, [email]);
+    const user = await createUser(req.body);
+    
+    const token = jwt.sign(
+    { id: user.id, rol: user.rol },
+    process.env.JWT_SECRET,
+    { expiresIn: '8h' }
+    );
 
-    if (result.rows.length === 0) {
-    return res.status(400).json({ message: 'Usuario no encontrado' });
-    }
-
-    const isValidPassword = await bcrypt.compare(password, result.rows[0].password);
-
-    if (!isValidPassword) {
-    return res.status(400).json({ message: 'Contraseña incorrecta' });
-    }
-
-    const token = jwt.sign({ id: result.rows[0].id, role: result.rows[0].role }, process.env.JWT_SECRET, {
-    expiresIn: '1h',
-    });
-
-    res.json({ token });
-} catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Error al iniciar sesión' });
+    logger.info('Usuario registrado', { userId: user.id });
+    res.status(201).json({ token });
+} catch (error) {
+    logger.error('Error en registro', { error: error.message });
+    res.status(500).json({ error: 'Error al registrar usuario' });
 }
 };

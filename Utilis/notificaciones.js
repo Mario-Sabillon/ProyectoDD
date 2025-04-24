@@ -1,1 +1,0 @@
-//enviar correo electronico automatico cuando un administrador mueva a un empleado a otra sucursal.

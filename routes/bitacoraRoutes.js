@@ -1,13 +1,9 @@
 import express from 'express';
-import { cambiarSucursal } from '../controllers/empleadoController.js';
+import { getReporteBitacora } from '../controllers/reporteController.js';
 import { authenticate, checkRole } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
-router.put('/:id/sucursal', 
-authenticate,
-checkRole('administrador'),
-cambiarSucursal
-);
+router.get('/', authenticate, checkRole('administrador'), getReporteBitacora);
 
 export default router;

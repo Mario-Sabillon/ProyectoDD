@@ -1,66 +1,56 @@
-import { pool } from '../BD/db.js';
+import { 
+    createSucursal, 
+    getSucursalById, 
+    getSucursalConEmpleados, 
+    updateSucursal, 
+    deleteSucursal 
+} from '../Models/sucursales.js';
+import { logger } from '../Utils/logger.js';
 
-// Crear sucursal
-export const crearSucursal = async (req, res) => {
-const { nombre, ubicacion, descripcion } = req.body;
-
-try {
-    const result = await pool.query(
-      'INSERT INTO Sucursales (nombre, ubicacion, descripcion) VALUES ($1, $2, $3) RETURNING *',
-    [nombre, ubicacion, descripcion]
-    );
-    res.status(201).json(result.rows[0]);
-} catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error al crear la sucursal' });
-}
-};
-
-// Obtener todas las sucursales
-export const obtenerSucursales = async (req, res) => {
-try {
-    const result = await pool.query('SELECT * FROM Sucursales ORDER BY fecha_creacion DESC');
-    res.status(200).json(result.rows);
-} catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error al obtener las sucursales' });
-}
-};
-
-// Actualizar sucursal
-export const actualizarSucursal = async (req, res) => {
-const { id } = req.params;
-const { nombre, ubicacion, descripcion } = req.body;
-
-try {
-    const result = await pool.query(
-      'UPDATE Sucursales SET nombre = $1, ubicacion = $2, descripcion = $3 WHERE id = $4 RETURNING *',
-    [nombre, ubicacion, descripcion, id]
-    );
-    if (result.rowCount > 0) {
-    res.status(200).json(result.rows[0]);
-    } else {
-    res.status(404).json({ message: 'Sucursal no encontrada' });
+export const createSucursalHandler = async (req, res) => {
+    try {
+    const sucursal = await createSucursal(req.body, req.user.id);
+    res.status(201).json(sucursal);
+    } catch (error) {
+    logger.error('Error al crear sucursal', { error: error.message });
+    res.status(500).json({ error: 'Error al crear sucursal' });
     }
-} catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error al actualizar la sucursal' });
-}
+};
+export const getSucursalHandler = async (req, res) => {
+    try {
+    const sucursal = await getSucursalById(req.params.id);
+    res.json(sucursal);
+    } catch (error) {
+    logger.error('Error al obtener sucursal', { error: error.message });
+    res.status(500).json({ error: 'Error al obtener sucursal' });
+    }
+};
+export const getSucursalEmpleadosHandler = async (req, res) => {
+    try {
+    const sucursal = await getSucursalConEmpleados(req.params.id);
+    res.json(sucursal);
+    } catch (error) {
+    logger.error('Error al obtener sucursal con empleados', { error: error.message });
+    res.status(500).json({ error: 'Error al obtener sucursal con empleados' });
+    }
 };
 
-// Eliminar sucursal
-export const eliminarSucursal = async (req, res) => {
-const { id } = req.params;
-
-try {
-    const result = await pool.query('DELETE FROM Sucursales WHERE id = $1', [id]);
-    if (result.rowCount > 0) {
-    res.status(200).json({ message: 'Sucursal eliminada' });
-    } else {
-    res.status(404).json({ message: 'Sucursal no encontrada' });
+export const updateSucursalHandler = async (req, res) => {
+    try {
+    const sucursal = await updateSucursal(req.params.id, req.body, req.user.id);
+    res.json(sucursal);
+    } catch (error) {
+    logger.error('Error al actualizar sucursal', { error: error.message });
+    res.status(500).json({ error: 'Error al actualizar sucursal' });
     }
-} catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error al eliminar la sucursal' });
-}
+};
+
+export const deleteSucursalHandler = async (req, res) => {
+    try {
+    await deleteSucursal(req.params.id, req.user.id);
+    res.status(204).send();
+    } catch (error) {
+    logger.error('Error al eliminar sucursal', { error: error.message });
+    res.status(500).json({ error: 'Error al eliminar sucursal' });
+    }
 };
