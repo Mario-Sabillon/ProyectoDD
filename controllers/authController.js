@@ -11,7 +11,7 @@ try {
         console.log('result', result);  
         const token = result.Token;
         logger.info('Inicio de sesión exitoso', { user: correo });
-        //res.json({ token }); // muestra el token en la respuesta
+        res.json({ token }); // muestra el token en la respuesta
         res.status(200).json("Inicio de sesión exitoso");
     })
 

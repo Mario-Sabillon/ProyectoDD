@@ -1,5 +1,5 @@
 import { supabase } from '../BD/db.js';
-import { generateToken } from '../middlewares/authMiddleware.js';
+import { generateToken } from '../middleware/authMiddleware.js';
 import { registrarBitacora } from '../Utils/logger.js';
 import bcrypt from 'bcrypt';
 

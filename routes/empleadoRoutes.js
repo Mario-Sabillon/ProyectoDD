@@ -1,6 +1,6 @@
 import express from 'express';
 import { cambiarSucursal } from '../controllers/empleadoController.js';
-import { authenticate, checkRole } from '../middlewares/authMiddleware.js';
+import { authenticate, checkRole } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
